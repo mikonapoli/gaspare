@@ -73,7 +73,8 @@ def _repr_markdown_(self: genai.types.GenerateContentResponse):
         c = self.text.replace("\n", "<br />")
     except ValueError as e:
         calls = (f"<code>{call.name}({', '.join([f'{a}={v}' for a, v in call.args.items()])})</code>" for call in self.function_calls)
-        c = f"<ul>{'\n'.join(f'<li>{c}</li>' for c in calls)}</ul>"
+        calls_repr = '\n'.join(f'<li>{c}</li>' for c in calls)
+        c = f"<ul>{calls_repr}</ul>"
     dets = det_repr(self)
     return f"""{c}\n<details>{dets}</details>"""
 
