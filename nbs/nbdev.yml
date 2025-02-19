@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "gaspare"
+  site-url: "https://mikonapoli.github.io/gaspare"
+  description: "A rewriting of Answer.AI's Gaspard to the new Genai SDK"
+  repo-branch: main
+  repo-url: "https://github.com/mikonapoli/gaspare"
