@@ -8,6 +8,8 @@ from .utils import *
 
 import os
 
+from urllib.parse import urlparse, parse_qs
+
 from google import genai
 from google.genai import types
 
