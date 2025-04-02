@@ -9,8 +9,7 @@ from .core import *
 
 import os
 
-import mimetypes
-import inspect
+
 
 from typing import Union
 from io import BytesIO
@@ -103,7 +102,7 @@ def prep_tools(tools, toolify_everything=False):
     class_tools = [types.Tool(function_declarations=[prep_tool(f, as_decl=True)]) for f in tools if inspect.isclass(f)]
     return funcs + tools_ + class_tools
 
-# %% ../nbs/03_tools.ipynb 38
+# %% ../nbs/03_tools.ipynb 37
 @patch
 def structured(self: genai.models.Models, inps, tool, model=None, **kwargs):
     self._tools=[tool]
@@ -112,7 +111,7 @@ def structured(self: genai.models.Models, inps, tool, model=None, **kwargs):
     config = self._genconf(temp=0., use_afc=False, tools=tools, tool_mode="ANY", model=model, **kwargs)
     contents = mk_contents(inps, self)
     _ = self._gen(inps,  model, config, stream=False)
-    return [nested_idx(ct, "function_response", "response", "result") for ct in nested_idx(self, "result", -1, "parts") or []]
+    return [nested_idx(ct, "function_response", "response", "result") for ct in nested_idx(self, "result_content", -1, "parts") or []]
 
 @patch
 def structured(self: genai.Client, inps, tool, model=None):
