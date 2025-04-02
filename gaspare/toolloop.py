@@ -13,7 +13,7 @@ from fastcore.meta import delegates
 
 from google import genai
 
-# %% ../nbs/04_toolloop.ipynb 14
+# %% ../nbs/04_toolloop.ipynb 13
 @patch
 @delegates(genai.chats.Chat.__call__)
 def toolloop(self:genai.chats.Chat,

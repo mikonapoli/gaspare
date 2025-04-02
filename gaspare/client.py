@@ -91,7 +91,7 @@ def structured(self: genai.models.Models, inps, tool, model=None, **kwargs):
 def structured(self: genai.Client, inps, tool, model=None):
     return self.models.structured(inps, tool, model)
 
-# %% ../nbs/03_client.ipynb 31
+# %% ../nbs/03_client.ipynb 30
 valid_func = genai.chats._validate_response
 
 @patch(as_prop=True)
@@ -127,14 +127,14 @@ def Chat(model:str, # The model to be used
     chat.c.post_cbs.insert(0, chat._rec_res)
     return chat
 
-# %% ../nbs/03_client.ipynb 33
+# %% ../nbs/03_client.ipynb 32
 @patch
 @delegates(genai.Client.__call__, keep=True)
 def __call__(self: genai.chats.Chat, inps=None, **kwargs):
     self.user_query = mk_content(inps) if inps else self.c.result_content[-1]
     return self.c(self.h + [self.user_query], **kwargs)
 
-# %% ../nbs/03_client.ipynb 41
+# %% ../nbs/03_client.ipynb 40
 @patch(as_prop=True)
 def use(self: genai.chats.Chat): return self.c.use
 
