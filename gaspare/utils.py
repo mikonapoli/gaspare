@@ -160,7 +160,7 @@ def response_md_repr(resp: types.GenerateContentResponse | types.GenerateImagesR
         for img in cts['images']:
             b64 = base64.b64encode(img.image_bytes).decode("utf-8")
             c += f'<div style="width: 200px; height: auto;"><img src="data:{img.mime_type};base64,{b64}" /></div>'
-        c += cts['text'].replace("\n", "<br />")
+        c += cts['text'].replace("\n", "\n\n")
     elif getattr(resp, "function_calls", False):
         calls = (f"<code>{call.name}({', '.join([f'{a}={v}' for a, v in call.args.items()])})</code>" for call in resp.function_calls)
         calls_repr = '\n'.join(f'<li>{c}</li>' for c in calls)
