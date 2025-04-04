@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.1.4
+
+
+- Add readme ([#2](https://github.com/mikonapoli/gaspare/issues/2))
+- Fix `imagen` method not being exported
+
+
 ## 0.1.3
 
 ### New Features
