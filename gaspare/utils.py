@@ -19,6 +19,7 @@ from fastcore.all import *
 all_model_types = {
     "gemini-2.0-flash": "llm-vertex#gemini-2.0-flash",
     "gemini-2.0-flash-lite": "llm#gemini-2.0-flash-lite",
+    "gemini-2.5-pro-preview-03-25": "llm-thinking#gemini-2.5-pro",
     "gemini-2.5-pro-exp-03-25": "llm-thinking#gemini-2.5-pro",
     "gemini-2.0-flash-exp": "llm-imagen#gemini-2.0-flash",
     "gemini-2.0-flash-exp-image-generation": "llm-imagen#gemini-2.0-flash",
@@ -88,6 +89,8 @@ def __add__(self: types.GenerateContentResponseUsageMetadata, other):
 # $/1M input (non cached) tokens, $/1M output tokens, $/1M cached input tokens, 
 
 pricings = {
+    'gemini-2.5-pro_short': [1.25, 10., 0.3125],
+    'gemini-2.5-pro_long': [2.5, 15., 0.625],
     'gemini-2.0-flash': [0.1, 0.4, 0.025],
     'gemini-2.0-flash-lite': [0.075, 0.3, 0.01875],
     'gemini-1.5-flash_short': [0.075, 0.3, 0.01875],
@@ -105,7 +108,8 @@ audio_token_pricings = {
 
 def get_pricing(model, prompt_tokens):
     if "exp" in model: return [0, 0, 0]
-    suff = "_long" if prompt_tokens > 128_000 else "_short"
+    limit = 200_000 if '2.5-pro' in model else 128_000
+    suff = "_long" if prompt_tokens > limit else "_short"
     m = all_model_types.get(model, "#").split("#")[-1]
     m += suff if "1.5" in m else ""
     return pricings.get(m, [0, 0, 0])
