@@ -26,7 +26,7 @@ def __call__(self: genai.models.Models,
              stream:bool=False, # Stream response?
              stop:str|list[str]|None=None, # Stop sequence[s]
              tools=None, # A list of functions or tools to be passed to the model
-             use_afc=True, # Use Google's automatic function calling? If False, functions will be converted to tools
+             use_afc=False, # Use Google's automatic function calling? If False, functions will be converted to tools
              # `AUTO` lets the model decide whether tools to use, 
              # `ANY` forces the model to call a function `NONE` avoids any function calling
              tool_mode='AUTO',  
@@ -90,6 +90,21 @@ def structured(self: genai.models.Models, inps, tool, model=None, **kwargs):
 @patch
 def structured(self: genai.Client, inps, tool, model=None):
     return self.models.structured(inps, tool, model)
+
+# %% ../nbs/03_client.ipynb 27
+@patch
+def imagen(self: genai.models.Models,
+           prompt:str, # Prompt for the image to be generated
+           n_img:int=1): # Number of images to be generated (1-8)
+    """Generate one or more images using the latest Imagen model."""
+    return self.generate_images(
+                model = [m for m in imagen_models if 'imagen' in m][0],
+                prompt=prompt, config={"number_of_images": n_img})
+
+@patch
+@delegates(to=genai.models.Models)
+def imagen(self: genai.Client, prompt, **kwargs):
+    return self.models.imagen(prompt, **kwargs)
 
 # %% ../nbs/03_client.ipynb 30
 valid_func = genai.chats._validate_response
