@@ -1,4 +1,4 @@
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 from .utils import *
 from .core import *
 from .client import *
