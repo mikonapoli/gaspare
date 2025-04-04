@@ -2,6 +2,15 @@
 
 <!-- do not remove -->
 
+## 0.1.3
+
+### New Features
+
+- Add Gemini 2.5 Pro Preview ([#5](https://github.com/mikonapoli/gaspare/issues/5))
+  - This will require restructuring the pricing functions, since the model's cost is based on prompt length (but with a different threshold than Gemini 1.5)
+
+
+
 ## 0.1.2
 
 * BUG Fix: You can now `from gaspare import *`
