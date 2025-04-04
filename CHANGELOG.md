@@ -2,7 +2,7 @@
 
 <!-- do not remove -->
 
-## 0.1.1
+## 0.1.2
 
 * BUG Fix: You can now `from gaspare import *`
 
