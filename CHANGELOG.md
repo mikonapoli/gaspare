@@ -2,6 +2,19 @@
 
 <!-- do not remove -->
 
+## 0.1.5
+
+
+### Bugs Squashed
+
+- Local videos not working properly ([#6](https://github.com/mikonapoli/gaspare/issues/6))
+  - Providing a video from a local path raises the following:
+
+```
+ClientError: 400 FAILED_PRECONDITION. {'error': {'code': 400, 'message': 'The File cxgja95z0ak1 is not in an ACTIVE state and usage is not allowed.', 'status': 'FAILED_PRECONDITION'}}
+```
+
+
 ## 0.1.4
 
 
