@@ -2,6 +2,14 @@
 
 <!-- do not remove -->
 
+## 0.2.0
+
+### New Features
+
+- Add async Client and Chat ([#3](https://github.com/mikonapoli/gaspare/issues/3))
+
+
+
 ## 0.1.5
 
 
