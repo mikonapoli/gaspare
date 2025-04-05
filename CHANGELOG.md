@@ -2,6 +2,11 @@
 
 <!-- do not remove -->
 
+## 0.2.1
+
+- Fixes the release adding all the files
+
+
 ## 0.2.0
 
 ### New Features
