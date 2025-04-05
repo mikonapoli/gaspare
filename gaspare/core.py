@@ -132,8 +132,19 @@ def cost(self: genai.Client | genai.client.AsyncClient): return self.models.cost
 
 # %% ../nbs/02_core.ipynb 39
 @patch
-def _r(self: genai.models.Models | genai.models.AsyncModels, r):
+def _r(self: genai.models.Models, r):
     """Process a complete model result, storing cost and usage on the `Models` instance."""
+    self.result = r
+    self.result_content = [nested_idx(r, "candidates", 0, "content")]
+    self._u = self.use + getattr(r, "usage_metadata", usage())
+    self._cost = self.cost + r.cost
+    for func in getattr(self, 'post_cbs', []): func(r)
+    return r
+
+@patch
+async def _r(self: genai.models.AsyncModels, _ar):
+    """Process an awaitable complete model result, storing cost and usage on the `Models` instance."""
+    r = await _ar
     self.result = r
     self.result_content = [nested_idx(r, "candidates", 0, "content")]
     self._u = self.use + getattr(r, "usage_metadata", usage())
@@ -160,6 +171,21 @@ def _stream(self: genai.models.Models, s):
         yield r.text
     r.candidates[0].content.parts = all_parts
     self._r(r)
+
+@patch
+async def _astream(self: genai.models.AsyncModels, s):
+    all_parts = []
+    async for r in await s:
+        all_parts.extend(r._parts)
+        yield r.text
+    r.candidates[0].content.parts = all_parts
+    # Clunky, but _r expects an awaitable coroutine
+    async def _w(x): return x
+    await self._r(_w(r))
+
+# This is for compatibility with Claudette. We want _stream(s) to be a coroutine, not an async generator
+@patch
+async def _stream(self: genai.models.AsyncModels, s): return self._astream(s)
 
 # %% ../nbs/02_core.ipynb 47
 @patch

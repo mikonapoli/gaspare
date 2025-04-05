@@ -18,7 +18,7 @@ from fastcore.all import *
 
 # %% ../nbs/03_client.ipynb 7
 @patch
-def __call__(self: genai.models.Models, 
+def __call__(self: genai.models.Models | genai.models.AsyncModels, 
              inps=None, # The inputs to be passed to the model
              sp:str='', # Optional system prompt
              temp:float=0.6, # Temperature
@@ -49,7 +49,7 @@ def __call__(self: genai.models.Models,
 
 @patch
 @delegates(genai.models.Models.__call__)
-def __call__(self: genai.Client, inps=None, **kwargs):
+def __call__(self: genai.Client | genai.client.AsyncClient, inps=None, **kwargs):
     return self.models(inps, client=self, **kwargs)
 
 # %% ../nbs/03_client.ipynb 11
@@ -66,7 +66,7 @@ def Client(model:str, # The model to be used by default (can be overridden when 
 
 # %% ../nbs/03_client.ipynb 16
 @patch
-def _repr_markdown_(self:genai.models.Models):
+def _repr_markdown_(self:genai.models.Models | genai.models.AsyncModels):
     if not hasattr(self,'result'): return 'No results yet'
     msg = self.result._repr_markdown_()
     return f"""{msg}
@@ -79,7 +79,7 @@ def _repr_markdown_(self:genai.models.Models):
 """
 
 @patch
-def _repr_markdown_(self:genai.Client): return self.models._repr_markdown_()
+def _repr_markdown_(self:genai.Client | genai.client.AsyncClient): return self.models._repr_markdown_()
 
 # %% ../nbs/03_client.ipynb 19
 @patch
@@ -88,12 +88,17 @@ def structured(self: genai.models.Models, inps, tool, model=None, **kwargs):
     return [nested_idx(ct, "function_response", "response", "result") for ct in nested_idx(self, "result_content", -1, "parts") or []]
 
 @patch
-def structured(self: genai.Client, inps, tool, model=None):
+async def structured(self: genai.models.AsyncModels, inps, tool, model=None, **kwargs):
+    _ = await self(inps,  tools=[tool], use_afc=False, tool_mode="ANY", temp=0., stream=False, **kwargs)
+    return [nested_idx(ct, "function_response", "response", "result") for ct in nested_idx(self, "result_content", -1, "parts") or []]
+
+@patch
+def structured(self: genai.Client | genai.client.AsyncClient, inps, tool, model=None):
     return self.models.structured(inps, tool, model)
 
 # %% ../nbs/03_client.ipynb 27
 @patch
-def imagen(self: genai.models.Models,
+def imagen(self: genai.models.Models | genai.models.AsyncModels,
            prompt:str, # Prompt for the image to be generated
            n_img:int=1): # Number of images to be generated (1-8)
     """Generate one or more images using the latest Imagen model."""
@@ -103,23 +108,23 @@ def imagen(self: genai.models.Models,
 
 @patch
 @delegates(to=genai.models.Models)
-def imagen(self: genai.Client, prompt, **kwargs):
+def imagen(self: genai.Client | genai.client.AsyncClient, prompt, **kwargs):
     return self.models.imagen(prompt, **kwargs)
 
 # %% ../nbs/03_client.ipynb 30
 valid_func = genai.chats._validate_response
 
 @patch(as_prop=True)
-def c(self: genai.chats.Chat): return self._modules
+def c(self: genai.chats.Chat | genai.chats.AsyncChat): return self._modules
 
 @patch(as_prop=True)
-def h(self: genai.chats.Chat): return self._curated_history
+def h(self: genai.chats.Chat | genai.chats.AsyncChat): return self._curated_history
 
 @patch(as_prop=True)
-def full_h(self: genai.chats.Chat): return self._comprehensive_history
+def full_h(self: genai.chats.Chat | genai.chats.AsyncChat): return self._comprehensive_history
 
 @patch
-def _rec_res(self: genai.chats.Chat, resp):
+def _rec_res(self: genai.chats.Chat | genai.chats.AsyncChat, resp):
     if not getattr(self, "user_query", False): return
     resp_c = nested_idx(resp, "candidates", 0, "content")
     self.record_history(
@@ -145,19 +150,19 @@ def Chat(model:str, # The model to be used
 # %% ../nbs/03_client.ipynb 32
 @patch
 @delegates(genai.Client.__call__, keep=True)
-def __call__(self: genai.chats.Chat, inps=None, **kwargs):
+def __call__(self: genai.chats.Chat | genai.chats.AsyncChat, inps=None, **kwargs):
     self.user_query = mk_content(inps) if inps else self.c.result_content[-1]
     return self.c(self.h + [self.user_query], **kwargs)
 
 # %% ../nbs/03_client.ipynb 40
 @patch(as_prop=True)
-def use(self: genai.chats.Chat): return self.c.use
+def use(self: genai.chats.Chat | genai.chats.AsyncChat): return self.c.use
 
 @patch(as_prop=True)
-def cost(self: genai.chats.Chat): return self.c.cost
+def cost(self: genai.chats.Chat | genai.chats.AsyncChat): return self.c.cost
 
 @patch
-def _repr_markdown_(self: genai.chats.Chat):
+def _repr_markdown_(self: genai.chats.Chat | genai.chats.AsyncChat):
     if not hasattr(self.c, 'result'): return 'No results yet'
     last_msg = self.c.result._repr_markdown_().split('<details>')[0]
 
