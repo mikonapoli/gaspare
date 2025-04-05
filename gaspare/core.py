@@ -113,21 +113,21 @@ def mk_msgs(msgs: list | str, *args, api:str="openai", **kw) -> list:
 
 # %% ../nbs/02_core.ipynb 38
 @patch(as_prop=True)
-def use(self: genai.models.Models): return getattr(self, "_u", usage())
+def use(self: genai.models.Models | genai.models.AsyncModels): return getattr(self, "_u", usage())
 
 @patch(as_prop=True)
-def cost(self: genai.models.Models): return getattr(self, "_cost", 0)
+def cost(self: genai.models.Models | genai.models.AsyncModels): return getattr(self, "_cost", 0)
 
 
 @patch(as_prop=True)
-def use(self: genai.Client): return self.models.use
+def use(self: genai.Client | genai.client.AsyncClient): return self.models.use
 
 @patch(as_prop=True)
-def cost(self: genai.Client): return self.models.cost
+def cost(self: genai.Client | genai.client.AsyncClient): return self.models.cost
 
 # %% ../nbs/02_core.ipynb 39
 @patch
-def _r(self: genai.models.Models, r):
+def _r(self: genai.models.Models | genai.models.AsyncModels, r):
     """Process a complete model result, storing cost and usage on the `Models` instance."""
     self.result = r
     self.result_content = [nested_idx(r, "candidates", 0, "content")]
@@ -137,10 +137,10 @@ def _r(self: genai.models.Models, r):
     return r
 
 @patch(as_prop=True)
-def result(self: genai.Client): return nested_idx(self, "models", "result")
+def result(self: genai.Client | genai.client.AsyncClient): return nested_idx(self, "models", "result")
 
 @patch(as_prop=True)
-def result_content(self: genai.Client): return nested_idx(self, "models", "result_content")
+def result_content(self: genai.Client | genai.client.AsyncClient): return nested_idx(self, "models", "result_content")
 
 # %% ../nbs/02_core.ipynb 45
 @patch(as_prop=True)
@@ -165,7 +165,7 @@ def _gen(self:genai.models.Models, contents, model:str, config=None, stream:bool
 
 # %% ../nbs/02_core.ipynb 53
 @patch
-def _genconf(self: genai.models.Models, **kw):
+def _genconf(self: genai.models.Models | genai.models.AsyncModels, **kw):
     """Builds a GenerateContentConfigDict from call parameters"""
     config= {k: v for k, v in kw.items() if k in types.GenerateContentConfigDict.__annotations__}
     if _sp := kw.get("sp", False) or kw.get('system_instruction', False) or getattr(self, 'sp', False):
@@ -254,7 +254,7 @@ def mk_fres_content(fres):
 
 # %% ../nbs/02_core.ipynb 75
 @patch
-def _call_tools(self: genai.models.Models, r):
+def _call_tools(self: genai.models.Models | genai.models.AsyncModels, r):
     if r.function_calls:
         self.result_content.append(mk_fres_content(f_results(r.function_calls, ns=getattr(self, "_tools", None))))
    
