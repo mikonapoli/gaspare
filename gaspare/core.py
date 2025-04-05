@@ -16,6 +16,7 @@ import inspect
 
 from urllib.parse import urlparse, parse_qs
 from functools import wraps
+from time import sleep
 
 from google import genai
 from google.genai import types
@@ -61,7 +62,11 @@ def mk_part(inp: Union[str, Path, types.Part, types.File, PIL.Image.Image], c: g
     "Turns an input fragment into a multimedia `Part` to be sent to a Gemini model"
     api_client = c or genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     if isinstance(inp, types.Part): return inp
-    if isinstance(inp, types.File): return types.Part(file_data={"file_uri": inp.uri, "mime_type": inp.mime_type})
+    if isinstance(inp, types.File):
+        if inp.state == 'PROCESSING':
+            sleep(.2)
+            return mk_part(api_client.files.get(name=inp.name))
+        return types.Part(file_data={"file_uri": inp.uri, "mime_type": inp.mime_type})
     if isinstance(inp, PIL.Image.Image): return types.Part.from_bytes(data=inp.tobytes(), mime_type=inp.get_format_mimetype())
     if isinstance(inp, bytes):
         mt = mimetypes.types_map["." + imghdr.what(None, h=inp)]
