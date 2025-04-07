@@ -4,7 +4,7 @@
 
 # %% auto 0
 __all__ = ['all_model_types', 'thinking_models', 'imagen_models', 'vertex_models', 'models', 'pricings', 'audio_token_pricings',
-           'usage', 'get_pricing', 'get_repr', 'det_repr', 'contents', 'response_md_repr']
+           'usage', 'get_pricing', 'get_repr', 'det_repr', 'all_contents', 'contents', 'response_md_repr']
 
 # %% ../nbs/01_utils.ipynb 4
 import os
@@ -144,31 +144,36 @@ def _repr_markdown_(self: genai._common.BaseModel):
     return det_repr(self)
 
 # %% ../nbs/01_utils.ipynb 51
-def contents(r: genai.types.GenerateContentResponse | genai.types.GenerateImagesResponse):
+def all_contents(r: genai.types.GenerateContentResponse | genai.types.GenerateImagesResponse):
     """Returns a dictionary with the contents of a Gemini model response"""
-    cts = {'text': '', 'images': []}
+    cts = {'text': '', 'images': [], 'calls': []}
     for part in nested_idx(r, 'candidates', 0, 'content', 'parts') or []:
         if part.text is not None: cts['text'] += part.text
         if part.inline_data is not None:
             cts['images'].append(types.Image(image_bytes=part.inline_data.data, mime_type=part.inline_data.mime_type))
     for im in nested_idx(r, 'generated_images') or []:
         cts['images'].append(im.image)
+    for fc in nested_idx(r, 'function_calls') or []:
+        cts['calls'].append(fc.to_json_dict())
     return cts
+
+def contents(r: genai.types.GenerateContentResponse):
+    """Helper functions to extract the text content from a Gemini Respons"""
+    return all_contents(r).get('text', '')
 
 # %% ../nbs/01_utils.ipynb 53
 def response_md_repr(resp: types.GenerateContentResponse | types.GenerateImagesResponse):
-    c = None
-    cts = contents(resp)
+    c = ''
+    cts = all_contents(resp)
     if cts['images'] or cts['text']:
-        c = ''
         for img in cts['images']:
             b64 = base64.b64encode(img.image_bytes).decode("utf-8")
             c += f'<div style="width: 200px; height: auto;"><img src="data:{img.mime_type};base64,{b64}" /></div>'
         c += cts['text'].replace("\n", "\n\n")
-    elif getattr(resp, "function_calls", False):
-        calls = (f"<code>{call.name}({', '.join([f'{a}={v}' for a, v in call.args.items()])})</code>" for call in resp.function_calls)
+    if cts['calls']:
+        calls = (f"<code>{call['name']}({', '.join([f'{a}={v}' for a, v in call['args'].items()])})</code>" for call in cts['calls'])
         calls_repr = '\n'.join(f'<li>{c}</li>' for c in calls)
-        c = f"<ul>{calls_repr}</ul>"
+        c += f"<details><summary>**Function Calls**</summary><ul>{calls_repr}</ul></details>"
     dets = det_repr(resp)
     return f"""{c}\n<details>{dets}</details>"""
     
