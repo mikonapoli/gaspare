@@ -2,6 +2,39 @@
 
 <!-- do not remove -->
 
+## 0.3.0
+### Breaking Changes
+
+- Make Gaspare's `content` function compatible with Claudette's ([#8](https://github.com/mikonapoli/gaspare/issues/8))
+  - `content` currently returns a dictionary, but Claudette expects it to return just the text content of the response. This requires some breaking change (although minimal)
+
+
+### Bugs Squashed
+
+- Long prompts cause OS errors ([#7](https://github.com/mikonapoli/gaspare/issues/7))
+  - ```python
+from gaspare import *
+
+m = models[4] # 2.0 flash experimental
+cli = Client(model=m)
+
+prompt = '''\
+Given a user description of an image, you will create a beautiful rendition of it, making sure to add in details that might not be present in the user's description but can be inferred. Only output the image, nothing else.
+
+<desc>
+Make a beautiful swan by a lake.
+</desc>
+'''
+res = cli(prompt)
+```
+
+Running the above results in this error:
+
+```
+OSError: [Errno 63] File name too long: "Given a user description of an image, you will create a beautiful rendition of it, making sure to add in details that might not be present in the user's description but can be inferred. Only output the image, nothing else.\n\n<desc>\nMake a beautiful swan by a lake.\n</desc>\n"
+```
+
+
 ## 0.2.2
 
 
