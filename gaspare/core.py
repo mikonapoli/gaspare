@@ -72,11 +72,15 @@ def mk_part(inp: Union[str, Path, types.Part, types.File, PIL.Image.Image], c: g
         mt = mimetypes.types_map["." + imghdr.what(None, h=inp)]
         return types.Part.from_bytes(data=inp, mime_type=mt)
     p_inp = Path(inp)
-    if p_inp.exists():
-        mt = mimetypes.guess_type(p_inp)[0]
-        if mt.split("/")[0] == "image": return types.Part.from_bytes(data=p_inp.read_bytes(), mime_type=mt)
-        file = api_client.files.upload(file=p_inp)
-        return mk_part(file, c)
+    try:
+        if p_inp.exists():
+            mt = mimetypes.guess_type(p_inp)[0]
+            if mt.split("/")[0] == "image": return types.Part.from_bytes(data=p_inp.read_bytes(), mime_type=mt)
+            file = api_client.files.upload(file=p_inp)
+            return mk_part(file, c)
+    except OSError as e:
+        if e.errno == 63: pass ## File name too long. Not a path.
+        else: raise e
     if is_youtube_url(inp): return types.Part.from_uri(file_uri=inp, mime_type='video/*')
     return types.Part.from_text(text=inp)
         
