@@ -4,6 +4,14 @@
 
 ## 0.3.1
 
+
+### Bugs Squashed
+
+- Properly compute Flash 2.5 costs ([#10](https://github.com/mikonapoli/gaspare/issues/10))
+
+
+## 0.3.1
+
 ### New Features
 
 - Add Gemini 2.5 Flash and Thinking budget ([#9](https://github.com/mikonapoli/gaspare/issues/9))
