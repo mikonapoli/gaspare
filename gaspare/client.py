@@ -39,13 +39,14 @@ def __call__(self: genai.models.Models | genai.models.AsyncModels,
     if tools:
         self._tools = tools
         prepped_tools = prep_tools(tools, toolify_everything=not use_afc)  
+    t_budget = maxthinktok if model in thinking_models else None
     config = self._genconf(sp=sp, temp=temp, maxtok=maxtok, stop=stop, tools=prepped_tools, 
-                           tool_mode=tool_mode, maxthinktok=maxthinktok if model in thinking_models else None, **kwargs)
+                           tool_mode=tool_mode, maxthinktok=t_budget, **kwargs)
     
     contents = mk_contents(inps, cli=kwargs.get('client', None))    
     gen_f = self.generate_content_stream if stream else self.generate_content
     r = gen_f(model=model, contents=contents, config=config if config else None)
-    return self._stream(r) if stream else self._r(r)
+    return self._stream(r, think=t_budget) if stream else self._r(r, think=t_budget)
 
 
 @patch

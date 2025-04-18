@@ -136,9 +136,10 @@ def cost(self: genai.Client | genai.client.AsyncClient): return self.models.cost
 
 # %% ../nbs/02_core.ipynb 39
 @patch
-def _r(self: genai.models.Models, r):
+def _r(self: genai.models.Models, r, think=None):
     """Process a complete model result, storing cost and usage on the `Models` instance."""
     self.result = r
+    if think is not None: r._thinking = think
     self.result_content = [nested_idx(r, "candidates", 0, "content")]
     self._u = self.use + getattr(r, "usage_metadata", usage())
     self._cost = self.cost + r.cost
@@ -146,9 +147,10 @@ def _r(self: genai.models.Models, r):
     return r
 
 @patch
-async def _r(self: genai.models.AsyncModels, _ar):
+async def _r(self: genai.models.AsyncModels, _ar, think=None):
     """Process an awaitable complete model result, storing cost and usage on the `Models` instance."""
     r = await _ar
+    if think is not None: r._thinking = think
     self.result = r
     self.result_content = [nested_idx(r, "candidates", 0, "content")]
     self._u = self.use + getattr(r, "usage_metadata", usage())
@@ -168,16 +170,16 @@ def _parts(self: types.GenerateContentResponse): return nested_idx(self, "candid
     
 
 @patch
-def _stream(self: genai.models.Models, s):
+def _stream(self: genai.models.Models, s, think=None):
     all_parts = []
     for r in s:
         all_parts.extend(r._parts)
         yield r.text
     r.candidates[0].content.parts = all_parts
-    self._r(r)
+    self._r(r, think)
 
 @patch
-async def _astream(self: genai.models.AsyncModels, s):
+async def _astream(self: genai.models.AsyncModels, s, think=None):
     all_parts = []
     async for r in await s:
         all_parts.extend(r._parts)
@@ -185,11 +187,11 @@ async def _astream(self: genai.models.AsyncModels, s):
     r.candidates[0].content.parts = all_parts
     # Clunky, but _r expects an awaitable coroutine
     async def _w(x): return x
-    await self._r(_w(r))
+    await self._r(_w(r), think)
 
 # This is for compatibility with Claudette. We want _stream(s) to be a coroutine, not an async generator
 @patch
-async def _stream(self: genai.models.AsyncModels, s): return self._astream(s)
+async def _stream(self: genai.models.AsyncModels, s, think): return self._astream(s, think)
 
 # %% ../nbs/02_core.ipynb 47
 @patch
