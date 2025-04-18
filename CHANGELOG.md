@@ -2,6 +2,14 @@
 
 <!-- do not remove -->
 
+## 0.3.1
+
+### New Features
+
+- Add Gemini 2.5 Flash and Thinking budget ([#9](https://github.com/mikonapoli/gaspare/issues/9))
+
+
+
 ## 0.3.0
 ### Breaking Changes
 
