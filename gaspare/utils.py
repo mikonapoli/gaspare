@@ -21,6 +21,7 @@ all_model_types = {
     "gemini-2.0-flash-lite": "llm#gemini-2.0-flash-lite",
     "gemini-2.5-pro-preview-03-25": "llm-thinking#gemini-2.5-pro",
     "gemini-2.5-pro-exp-03-25": "llm-thinking#gemini-2.5-pro",
+    "gemini-2.5-flash-preview-04-17": "llm-thinking#gemini-2.5-flash",
     "gemini-2.0-flash-exp": "llm-imagen#gemini-2.0-flash",
     "gemini-2.0-flash-exp-image-generation": "llm-imagen#gemini-2.0-flash",
     "gemini-2.0-flash-001": "llm-vertex#gemini-2.0-flash",
@@ -91,6 +92,8 @@ def __add__(self: types.GenerateContentResponseUsageMetadata, other):
 pricings = {
     'gemini-2.5-pro_short': [1.25, 10., 0.3125],
     'gemini-2.5-pro_long': [2.5, 15., 0.625],
+    'gemini-2.5-flash': [0.15, .6, 0.0375], # No cache for this yet
+    'gemini-2.5-flash_thinking': [0.15, 3.5, 0.0375],
     'gemini-2.0-flash': [0.1, 0.4, 0.025],
     'gemini-2.0-flash-lite': [0.075, 0.3, 0.01875],
     'gemini-1.5-flash_short': [0.075, 0.3, 0.01875],
@@ -106,19 +109,21 @@ audio_token_pricings = {
     'gemini-2.0-flash': [0.7, 0.4, 0.175],
 }
 
-def get_pricing(model, prompt_tokens):
+def get_pricing(model, prompt_tokens, thinking_mode=True):
     if "exp" in model: return [0, 0, 0]
     limit = 200_000 if '2.5-pro' in model else 128_000
     suff = "_long" if prompt_tokens > limit else "_short"
     m = all_model_types.get(model, "#").split("#")[-1]
-    m += suff if "1.5" in m else ""
+    m += suff if "1.5" in m or "2.5-pro" in m else ""
+    m += "_thinking" if "2.5-flash" in m and thinking_mode else ""
     return pricings.get(m, [0, 0, 0])
 
 
 # %% ../nbs/01_utils.ipynb 30
 @patch(as_prop=True)
 def cost(self: types.GenerateContentResponse):
-    ip, op, cp = get_pricing(self.model_version, self.usage_metadata.prompt_token_count)
+    thinking_mode = getattr(self, "_thinking", True)
+    ip, op, cp = get_pricing(self.model_version, self.usage_metadata.prompt_token_count, thinking_mode)
     return ((self.usage_metadata.inp * ip) + (self.usage_metadata.out * op) + (self.usage_metadata.cached * cp)) / 1e6
 
 # %% ../nbs/01_utils.ipynb 32

@@ -29,7 +29,8 @@ def __call__(self: genai.models.Models | genai.models.AsyncModels,
              use_afc=False, # Use Google's automatic function calling? If False, functions will be converted to tools
              # `AUTO` lets the model decide whether tools to use, 
              # `ANY` forces the model to call a function `NONE` avoids any function calling
-             tool_mode='AUTO',  
+             tool_mode='AUTO',
+             maxthinktok:int=8000, # "Thinking" token budget for models that allow it
              **kwargs):
     """Call to a Gemini LLM"""
     kwargs["model"] = kwargs.get("model", getattr(self, "model", None))
@@ -38,8 +39,8 @@ def __call__(self: genai.models.Models | genai.models.AsyncModels,
     if tools:
         self._tools = tools
         prepped_tools = prep_tools(tools, toolify_everything=not use_afc)  
-    config = self._genconf(sp=sp, temp=temp, maxtok=maxtok, stop=stop, tools=prepped_tools,
-                           tool_mode=tool_mode, **kwargs)
+    config = self._genconf(sp=sp, temp=temp, maxtok=maxtok, stop=stop, tools=prepped_tools, 
+                           tool_mode=tool_mode, maxthinktok=maxthinktok if model in thinking_models else None, **kwargs)
     
     contents = mk_contents(inps, cli=kwargs.get('client', None))    
     gen_f = self.generate_content_stream if stream else self.generate_content

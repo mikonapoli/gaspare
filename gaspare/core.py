@@ -210,6 +210,10 @@ def _genconf(self: genai.models.Models | genai.models.AsyncModels, **kw):
     if maxtok := kw.get("maxtok", False): config['max_output_tokens'] = maxtok
     if stop := kw.get("stop", False): config['stop_sequences'] = [stop] if isinstance(stop, str) else stop
 
+    model = kw.get('model', None)
+    if tbudget := kw.get("maxthinktok", None) is not None and model in thinking_models: 
+        config['thinking_config'] = {"thinking_budget": tbudget}
+
     if tools:= kw.get("tools", False):
         config['tools'] = tools
         tc = config.get('tool_config', dict())
@@ -218,7 +222,7 @@ def _genconf(self: genai.models.Models | genai.models.AsyncModels, **kw):
         tc['function_calling_config'] = fcc
         config['tool_config']= tc
         
-    if model := kw.get('model', None) in imagen_models and not getattr(self, "text_only", False):
+    if model in imagen_models and not getattr(self, "text_only", False):
         config['response_modalities'] = kw.get('response_modalities', ['Text', 'Image'])
         
     return config
