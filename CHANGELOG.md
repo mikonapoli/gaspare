@@ -2,6 +2,22 @@
 
 <!-- do not remove -->
 
+## 0.3.3
+
+
+### Bugs Squashed
+
+Thanks to @ncoop57 for this!
+
+- oserror filename too long can be multiple error numbers ([#11](https://github.com/mikonapoli/gaspare/issues/11))
+  - I'm still getting the same issue outlined in #7 as the errno depends on the OS so the current methodology for detecting it does not work for all systems (e.g., [here](https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants?view=msvc-170) it is for Windows). I'll open a PR with a fix
+
+
+## 0.3.2
+
+
+
+
 ## 0.3.2
 
 
