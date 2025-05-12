@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Tool Loop – gaspare</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-de070a7b0ab54f8780927367ac907214.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-0c9eb0277ab99f059f9e902403bd7a3d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Tool Loop – gaspare">
+<meta property="og:description" content="A rewriting of Answer.AI’s Gaspard to the new Genai SDK">
+<meta property="og:site_name" content="gaspare">
+<meta name="twitter:title" content="Tool Loop – gaspare">
+<meta name="twitter:description" content="A rewriting of Answer.AI’s Gaspard to the new Genai SDK">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">gaspare</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./toolloop.html">Tool Loop</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaspare</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./genai_sdk.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Genai SDK</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./client.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Client &amp; Chat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./toolloop.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Tool Loop</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./async.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Async versions</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chat.toolloop" id="toc-chat.toolloop" class="nav-link active" data-scroll-target="#chat.toolloop">Chat.toolloop</a></li>
+  <li><a href="#code-interpreter" id="toc-code-interpreter" class="nav-link" data-scroll-target="#code-interpreter">Code interpreter</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/mikonapoli/gaspare/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="toolloop.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tool Loop</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div id="8f9f6dd6-1216-4776-90f2-8910fc883cb5" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> models[<span class="dv">0</span>]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'gemini-2.0-flash'</code></pre>
+</div>
+</div>
+<p>Let’s use the <a href="https://github.com/anthropics/anthropic-cookbook/blob/main/tool_use/customer_service_agent.ipynb">same example</a> from Claudette’s documentation.</p>
+<div id="c36025e7-18aa-48ad-a313-0badce6ea107" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>orders <span class="op">=</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"O1"</span>: <span class="bu">dict</span>(<span class="bu">id</span><span class="op">=</span><span class="st">"O1"</span>, product<span class="op">=</span><span class="st">"Widget A"</span>, quantity<span class="op">=</span><span class="dv">2</span>, price<span class="op">=</span><span class="fl">19.99</span>, status<span class="op">=</span><span class="st">"Awaiting order confirmation"</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"O2"</span>: <span class="bu">dict</span>(<span class="bu">id</span><span class="op">=</span><span class="st">"O2"</span>, product<span class="op">=</span><span class="st">"Gadget B"</span>, quantity<span class="op">=</span><span class="dv">1</span>, price<span class="op">=</span><span class="fl">49.99</span>, status<span class="op">=</span><span class="st">"Processing"</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"O3"</span>: <span class="bu">dict</span>(<span class="bu">id</span><span class="op">=</span><span class="st">"O3"</span>, product<span class="op">=</span><span class="st">"Gadget B"</span>, quantity<span class="op">=</span><span class="dv">2</span>, price<span class="op">=</span><span class="fl">49.99</span>, status<span class="op">=</span><span class="st">"Shipped"</span>)}</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>customers <span class="op">=</span> {</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"C1"</span>: <span class="bu">dict</span>(name<span class="op">=</span><span class="st">"John Doe"</span>, email<span class="op">=</span><span class="st">"john@example.com"</span>, phone<span class="op">=</span><span class="st">"123-456-7890"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>               orders<span class="op">=</span>[orders[<span class="st">'O1'</span>], orders[<span class="st">'O2'</span>]]),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"C2"</span>: <span class="bu">dict</span>(name<span class="op">=</span><span class="st">"Jane Smith"</span>, email<span class="op">=</span><span class="st">"jane@example.com"</span>, phone<span class="op">=</span><span class="st">"987-654-3210"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>               orders<span class="op">=</span>[orders[<span class="st">'O3'</span>]])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As with Claudette, we do not have to create the JSON schema manually. We can use docments.</p>
+<div id="b544f2ad-0e09-4466-9ae2-ada005227996" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_customer_info(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    customer_id:<span class="bu">str</span> <span class="co"># ID of the customer</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>): <span class="co"># Customer's name, email, phone number, and list of orders</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Retrieves a customer's information and their orders based on the customer ID"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'- Retrieving customer </span><span class="sc">{</span>customer_id<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> customers.get(customer_id, <span class="st">"Customer not found"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_order_details(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    order_id:<span class="bu">str</span> <span class="co"># ID of the order</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>): <span class="co"># Order's ID, product name, quantity, price, and order status</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Retrieves the details of a specific order based on the order ID"</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'- Retrieving order </span><span class="sc">{</span>order_id<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> orders.get(order_id, <span class="st">"Order not found"</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cancel_order(</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    order_id:<span class="bu">str</span> <span class="co"># ID of the order to cancel</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">bool</span>: <span class="co"># True if the cancellation is successful</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Cancels an order based on the provided order ID"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'- Cancelling order </span><span class="sc">{</span>order_id<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> order_id <span class="kw">not</span> <span class="kw">in</span> orders: <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    orders[order_id][<span class="st">'status'</span>] <span class="op">=</span> <span class="st">'Cancelled'</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are ready to go. The main difference here is that we don’t assign the tools to the chat itself, since otherwise Gemini becomes too eager to use them.</p>
+<div id="45ddf3f7-a1c7-4178-bf34-03c9ac2345b1" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tools <span class="op">=</span> [get_customer_info, get_order_details, cancel_order]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ac4935c5-4504-4e0d-ba22-4879024e5703" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> <span class="st">'Can you tell me the email address for customer C1?'</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> <span class="st">'Tell me the email address for customer C1.'</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> chat(pr, tools<span class="op">=</span>tools, use_afc<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>- Retrieving customer C1</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<ul>
+<li>
+<code>get_customer_info(customer_id=C1)</code>
+</li>
+</ul>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 145; Out: 10; Total: 155
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.0014089217409491539
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>function_call</code>:
+<ul>
+<li>
+<code>args</code>:
+<ul>
+<li>
+<b>customer_id</b>: C1
+</li>
+</ul>
+</li>
+<li>
+<code>name</code>: get_customer_info
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<div id="8042fc83-48b5-4d8a-94f8-f17623088619" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>chat()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The email address for customer C1 is john@example.com.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 72; Out: 15; Total: 87
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.00014472052765389284
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: The email address for customer C1 is john@example.com.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<div id="c9d35f5c-2842-4411-95f7-cd5dd66e7264" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sp <span class="op">=</span> <span class="st">"""You will be provided with tools, but don't limit your answer to those tools.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">If the user query is related to some of the tools you have access to come up with a sequence of actions to achieve the goal and **execute the plan immediately**.</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">If the user query is unrelated to the tools you have access to, answer the query using your own knowledge."""</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(models[<span class="dv">0</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> chat(<span class="st">'Cancel all orders for customer C1.'</span>, tools<span class="op">=</span>tools, use_afc<span class="op">=</span><span class="va">False</span>, sp<span class="op">=</span>sp, temp<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>- Retrieving customer C1</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>I can only cancel orders if I have the order ID. I need to retrieve the customer’s information first to get their order IDs. After that, I can cancel each order separately.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 218; Out: 49; Total: 267
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.10805802442589585
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: I can only cancel orders if I have the order ID. I need to retrieve the customer’s information first to get their order IDs. After that, I can cancel each order separately.
+</li>
+</ul>
+</details>
+<details open="true">
+<summary>
+parts[1]
+</summary>
+<ul>
+<li>
+<code>function_call</code>:
+<ul>
+<li>
+<code>args</code>:
+<ul>
+<li>
+<b>customer_id</b>: C1
+</li>
+</ul>
+</li>
+<li>
+<code>name</code>: get_customer_info
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<hr>
+<section id="chat.toolloop" class="level3">
+<h3 class="anchored" data-anchor-id="chat.toolloop">Chat.toolloop</h3>
+<blockquote class="blockquote">
+<pre><code> Chat.toolloop (pr, max_steps=10, trace_func:Optional[&lt;built-
+                infunctioncallable&gt;]=None, cont_func:Optional[&lt;built-
+                infunctioncallable&gt;]=&lt;function noop&gt;, inps=None,
+                sp:str='', temp:float=0.6, maxtok:int|None=None,
+                stream:bool=False, stop:str|list[str]|None=None,
+                tools=None, use_afc=False, tool_mode='AUTO',
+                maxthinktok:int=8000)</code></pre>
+</blockquote>
+<p><em>Add prompt <code>pr</code> to dialog and get a response from Gemini, automatically following up with <code>tool_use</code> messages</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pr</td>
+<td></td>
+<td></td>
+<td>Prompt to pass to Gemini</td>
+</tr>
+<tr class="even">
+<td>max_steps</td>
+<td>int</td>
+<td>10</td>
+<td>Maximum number of tool requests to loop through</td>
+</tr>
+<tr class="odd">
+<td>trace_func</td>
+<td>Optional</td>
+<td>None</td>
+<td>Function to trace tool use steps (e.g <code>print</code>)</td>
+</tr>
+<tr class="even">
+<td>cont_func</td>
+<td>Optional</td>
+<td>noop</td>
+<td>Function that stops loop if returns False</td>
+</tr>
+<tr class="odd">
+<td>inps</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sp</td>
+<td>str</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>temp</td>
+<td>float</td>
+<td>0.6</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>maxtok</td>
+<td>int | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>stream</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>stop</td>
+<td>str | list[str] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>tools</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>use_afc</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>tool_mode</td>
+<td>str</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>maxthinktok</td>
+<td>int</td>
+<td>8000</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="0c44ad55-b87e-463f-b924-56ae2e35315b" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="at">@patch</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="at">@delegates</span>(genai.chats.Chat.<span class="fu">__call__</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> toolloop(<span class="va">self</span>:genai.chats.Chat,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             pr, <span class="co"># Prompt to pass to Gemini</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>             max_steps<span class="op">=</span><span class="dv">10</span>, <span class="co"># Maximum number of tool requests to loop through</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>             trace_func:Optional[<span class="bu">callable</span>]<span class="op">=</span><span class="va">None</span>, <span class="co"># Function to trace tool use steps (e.g `print`)</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>             cont_func:Optional[<span class="bu">callable</span>]<span class="op">=</span>noop, <span class="co"># Function that stops loop if returns False</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>             <span class="op">**</span>kwargs):</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Add prompt `pr` to dialog and get a response from Gemini, automatically following up with `tool_use` messages"</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    n_msgs <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.h)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    kwargs[<span class="st">"use_afc"</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> <span class="va">self</span>(pr, <span class="op">**</span>kwargs)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(max_steps):</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> r.function_calls:<span class="cf">break</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> trace_func: trace_func(<span class="va">self</span>.h[n_msgs:])<span class="op">;</span> n_msgs <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.h)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> <span class="va">self</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> (cont_func <span class="kw">or</span> noop)(<span class="va">self</span>.h[<span class="op">-</span><span class="dv">2</span>]): <span class="cf">break</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> trace_func: trace_func(<span class="va">self</span>.h[n_msgs:])</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="6d1f588c-a5e0-469e-a1a7-47bbde5b637f" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(model)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> chat.toolloop(<span class="st">'Tell me the email address for customer C1.'</span>, tools<span class="op">=</span>tools, sp<span class="op">=</span>sp, temp<span class="op">=</span><span class="fl">0.</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>- Retrieving customer C1</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The email address for customer C1 is john@example.com.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 282; Out: 15; Total: 297
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -4.4924703737099965e-05
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: The email address for customer C1 is john@example.com.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<div id="cfec47d8-9832-4cfa-acb5-98d86474a19f" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_msgs(msgs):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n, m <span class="kw">in</span> <span class="bu">enumerate</span>(msgs):</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, part <span class="kw">in</span> <span class="bu">enumerate</span>(m.parts):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Message </span><span class="sc">{</span>n<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">, Part </span><span class="sc">{</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">:</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            c <span class="op">=</span> <span class="st">"* Text *: "</span> <span class="op">+</span> part.text <span class="cf">if</span> part.text  <span class="cf">else</span> <span class="st">""</span> </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            c <span class="op">+=</span> <span class="st">"* Function Call *: "</span> <span class="op">+</span> <span class="bu">str</span>(part.function_call) <span class="cf">if</span> part.function_call <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            c <span class="op">+=</span> <span class="st">"* Function Response *: "</span> <span class="op">+</span> <span class="bu">str</span>(part.function_response.response[<span class="st">'result'</span>]) <span class="cf">if</span> part.function_response <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(c)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>()</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(model)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> chat.toolloop(<span class="st">'Cancel all orders for customer C1.'</span>, tools<span class="op">=</span>tools, trace_func<span class="op">=</span>print_msgs, temp<span class="op">=</span><span class="fl">0.6</span>, sp<span class="op">=</span>sp)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>- Retrieving customer C1
+
+Message 1, Part 1:
+
+* Text *: Cancel all orders for customer C1.
+
+
+Message 2, Part 1:
+
+* Text *: I can only cancel orders if I have the order ID. I need to get the order IDs for customer C1 first.
+
+
+
+Message 2, Part 2:
+
+* Function Call *: id=None args={'customer_id': 'C1'} name='get_customer_info'
+
+- Cancelling order O1
+- Cancelling order O2
+
+Message 1, Part 1:
+
+* Function Response *: {'name': 'John Doe', 'email': 'john@example.com', 'phone': '123-456-7890', 'orders': [{'id': 'O1', 'product': 'Widget A', 'quantity': 2, 'price': 19.99, 'status': 'Cancelled'}, {'id': 'O2', 'product': 'Gadget B', 'quantity': 1, 'price': 49.99, 'status': 'Cancelled'}]}
+
+
+Message 2, Part 1:
+
+* Text *: OK. I have the customer's order IDs. Now I will cancel them one by one.
+
+
+
+Message 2, Part 2:
+
+* Function Call *: id=None args={'order_id': 'O1'} name='cancel_order'
+
+
+Message 2, Part 3:
+
+* Function Call *: id=None args={'order_id': 'O2'} name='cancel_order'
+
+
+Message 1, Part 1:
+
+* Function Response *: True
+
+
+Message 1, Part 2:
+
+* Function Response *: True
+
+
+Message 2, Part 1:
+
+* Text *: All orders for customer C1 have been cancelled.
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>All orders for customer C1 have been cancelled.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 348; Out: 11; Total: 359
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.011668531732125715
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: All orders for customer C1 have been cancelled.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<p>In the original example, one of the two orders had a status of <code>Shipped</code>. With that, the model tried to be too smart, and refused to cancel it since a Shipped order cannot be canceled (this is not necessarily a bad thing).</p>
+<div id="9e849776-9d40-4efc-90c1-f76670b0da69" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>chat.toolloop(<span class="st">'What is the status of order O1?'</span>, tools<span class="op">=</span>tools)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>- Retrieving order O1</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The status of order O1 is Cancelled.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 319; Out: 10; Total: 329
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.005309220403432846
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: The status of order O1 is Cancelled.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+</section>
+<section id="code-interpreter" class="level2">
+<h2 class="anchored" data-anchor-id="code-interpreter">Code interpreter</h2>
+<div id="57d566a6-7d9d-44fd-b446-e2c947c892b5" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> toolslm.shell <span class="im">import</span> get_shell</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.meta <span class="im">import</span> delegates</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> traceback</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f52c860a-0f03-40e9-83aa-55fa5019e4b3" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>imps <span class="op">=</span> <span class="st">'os, warnings, time, json, re, math, collections, itertools, functools, dateutil, datetime, string, types, copy, pprint, enum, numbers, decimal, fractions, random, operator, typing, dataclasses'</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> CodeChat(model: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span>, ask:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, tools<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    imps <span class="op">=</span> <span class="st">'os, warnings, time, json, re, math, collections, itertools, functools, dateutil, datetime, string, types, copy, pprint, enum, numbers, decimal, fractions, random, operator, typing, dataclasses'</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    chat <span class="op">=</span> Chat(model<span class="op">=</span>model, <span class="op">**</span>kwargs)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    chat.ask <span class="op">=</span> ask</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    chat.shell <span class="op">=</span> get_shell()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    chat.shell.run_cell(<span class="st">'import '</span><span class="op">+</span> imps)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    chat._tools <span class="op">=</span> tools</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    chat._tools.append(chat.run_code)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> chat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="83d33598-3ba8-4f30-a2e2-f3a73e706366" class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="at">@patch</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_code(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>:genai.chats.Chat,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    code:<span class="bu">str</span>,   <span class="co"># Code to execute in persistent IPython session</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>): <span class="co"># Result of expression on last line (if exists); '#DECLINED#' if user declines request to execute</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Executes python code using a persistent IPython session. This is a safe sandbox environment."</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    confirm <span class="op">=</span> <span class="ss">f'Press Enter to execute, or enter "n" to skip?</span><span class="ch">\n</span><span class="ss">```</span><span class="ch">\n</span><span class="sc">{</span>code<span class="sc">}</span><span class="ch">\n</span><span class="ss">```</span><span class="ch">\n</span><span class="ss">'</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">"ask"</span>, <span class="va">True</span>) <span class="kw">and</span> <span class="bu">input</span>(confirm): <span class="cf">return</span> <span class="st">'#DECLINED#'</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>: res <span class="op">=</span> <span class="va">self</span>.shell.run_cell(code)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e: <span class="cf">return</span> traceback.format_exc()</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res.stdout <span class="cf">if</span> res.result <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> res.result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f07da44a-96b0-4257-a864-7e3d94f3d361" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sp <span class="op">=</span> <span class="ss">f'''You are a knowledgable coding assistant assistant. </span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ss">Don't do complex calculations yourself -- create code for them. </span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ss">Whenever you create code, run it in the IPython environment using the `run_code` tool.</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="ss">Don't ask for confirmation to use a tool and do your best to infer any parameters needed.</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="ss">The following modules are pre-imported for `run_code` automatically:</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>imps<span class="sc">}</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="ss">Note that `run_code` interpreter state is *persistent* across calls. </span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="ss">Before executing a task, carefully consider all tools at your disposal.</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="ss">If a tool returns `#DECLINED#` report to the user that the attempt was declined and no further progress can be made.'''</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6a6a5715-1af3-4403-b0d3-71e60aa424a1" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_user(x: <span class="bu">str</span> <span class="co"># Unused parameter.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>            ) <span class="op">-&gt;</span> <span class="bu">str</span>: <span class="co"># Username of current user</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Gets the username of the user for the current session"""</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Looking up username"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'Miko'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6f077806-0622-4c6d-bc0b-6b29f93a39e9" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> CodeChat(model, tools<span class="op">=</span>[get_user], sp<span class="op">=</span>sp, temp<span class="op">=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d8924bc0-8bd9-4dcc-87fb-1c8aa90556eb" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> <span class="st">'''Create a 1-line function `checksum` for a string `s`, that multiplies together the ascii </span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="st">values of each character in `s` using `reduce`. Test it into the session.'''</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> chat.toolloop(pr, tools<span class="op">=</span>chat._tools, sp<span class="op">=</span>sp)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdin">
+<pre><code>Press Enter to execute, or enter "n" to skip?
+```
+from functools import reduce
+checksum = lambda s: reduce(lambda x, y: x * y, [ord(c) for c in s], 1)
+print(checksum('abc'))
+```
+ 
+Press Enter to execute, or enter "n" to skip?
+```
+from functools import reduce
+checksum = lambda s: reduce(lambda x, y: x * y, [ord(c) for c in s], 1)
+```
+ </code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The function <code>checksum</code> has been created. It calculates the product of the ASCII values of the characters in a given string. For the test string “abc”, the checksum is 941094.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 416; Out: 44; Total: 460
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.07642308148470792
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: The function <code>checksum</code> has been created. It calculates the product of the ASCII values of the characters in a given string. For the test string “abc”, the checksum is 941094.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<div id="3dd28f47-545f-4d02-b19c-882a0f723d0f" class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>chat.toolloop(<span class="st">"Compute the checksum of the username of the current session."</span>,  tools<span class="op">=</span>chat._tools)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Looking up username</code></pre>
+</div>
+<div class="cell-output cell-output-stdin">
+<pre><code>Press Enter to execute, or enter "n" to skip?
+```
+from functools import reduce
+checksum = lambda s: reduce(lambda x, y: x * y, [ord(c) for c in s], 1)
+print(checksum("Miko"))
+```
+ </code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The checksum of the username “Miko” is 96025545.</p>
+<details>
+<ul>
+<li>
+<code>usage_metadata</code>: Cached: 0; In: 541; Out: 21; Total: 562
+</li>
+<li>
+<code>automatic_function_calling_history</code>:
+</li>
+<li>
+<code>model_version</code>: gemini-2.0-flash
+</li>
+<li>
+<code>candidates</code>:
+<details open="true">
+<summary>
+candidates[0]
+</summary>
+<ul>
+<li>
+<code>finish_reason</code>: FinishReason.STOP
+</li>
+<li>
+<code>avg_logprobs</code>: -0.0005312668869183177
+</li>
+<li>
+<code>content</code>:
+<ul>
+<li>
+<code>role</code>: model
+</li>
+<li>
+<code>parts</code>:
+<details open="true">
+<summary>
+parts[0]
+</summary>
+<ul>
+<li>
+<code>text</code>: The checksum of the username “Miko” is 96025545.
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</li>
+</ul>
+</details>
+</div>
+</div>
+<p>Although this example works in this fashion, it is very sensitive to the different prompts and settings. <a href="https://github.com/googleapis/python-aiplatform/issues/4472">This issue</a> seems to be related, and it might have to do with some parse failures of codeblocks.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mikonapoli\.github\.io\/gaspare");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mikonapoli/gaspare/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
