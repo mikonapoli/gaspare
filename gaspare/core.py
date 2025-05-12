@@ -9,6 +9,7 @@ __all__ = ['is_youtube_url', 'mk_part', 'mk_parts', 'mk_content', 'mk_contents',
 # %% ../nbs/02_core.ipynb 4
 from .utils import *
 
+import errno
 import os
 
 import mimetypes
@@ -79,7 +80,7 @@ def mk_part(inp: Union[str, Path, types.Part, types.File, PIL.Image.Image], c: g
             file = api_client.files.upload(file=p_inp)
             return mk_part(file, c)
     except OSError as e:
-        if e.errno == 63: pass ## File name too long. Not a path.
+        if e.errno == errno.ENAMETOOLONG: pass ## File name too long. Not a path.
         else: raise e
     if is_youtube_url(inp): return types.Part.from_uri(file_uri=inp, mime_type='video/*')
     return types.Part.from_text(text=inp)
